@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dasawer | Social Video Chat</title>
+    <script crossorigin src="https://unpkg.com"></script>
+    <style>
+        :root { --green: #2ecc71; --blue: #3498db; --dark: #1a1a2e; }
+
+        body {
+            margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh;
+            display: flex; flex-direction: column;
+            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite; color: white;
+        }
+
+        @keyframes gradient { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+
+        header { padding: 15px; text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-bottom: 2px solid var(--green); }
+
+        #main-container { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+
+        /* Video */
+        #video-section { flex: 2; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--blue); position: relative; overflow: hidden; }
+
+        /* Chat */
+        #chat-section { flex: 1; background: rgba(0,0,0,0.6); border-radius: 20px; display: flex; flex-direction: column; border: 1px solid var(--green); }
+        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; max-width: 80%; }
+        .msg.me { align-self: flex-end; background: var(--green); color: black; }
+        
+        #chat-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
+        input { flex: 1; padding: 10px; border-radius: 20px; border: none; outline: none; }
+        button#send-btn { background: var(--green); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+
+        #setup-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; background: var(--dark); }
+        .join-card { text-align: center; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--green); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 style="margin:0; font-size: 1.8rem;">DASA<span style="color:var(--green)">WER</span></h1>
+</header>
+
+<div id="main-container">
+    <section id="video-section">
+        <div id="setup-screen">
+            <div class="join-card">
+                <h2>¿Listo para entrar?</h2>
+                <button id="send-btn" style="padding: 15px 40px;" onclick="startDasawer()">UNIRSE A LA SALA</button>
+            </div>
+        </div>
+        <div id="call-frame" style="height: 100%;"></div>
+    </section>
+
+    <aside id="chat-section">
+        <div style="padding:15px; border-bottom:1px solid #333; color:var(--green); font-weight:bold;">CHAT GLOBAL</div>
+        <div id="chat-messages">
+            <div class="msg">Bienvenido a Dasawer. ¡Saluda a los demás!</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
+            <button id="send-btn" onclick="sendMessage()">Enviar</button>
+        </div>
+    </aside>
+</div>
+
+<script>
+    // 1. CONFIGURACIÓN DE VIDEO (Daily.co)
+    async function startDasawer() {
+        const ROOM_URL = "TU_URL_DE_DAILY_AQUI"; // <--- PON TU LINK AQUÍ
+        document.getElementById('setup-screen').style.display = 'none';
+        
+        const callFrame = window.DailyIframe.createFrame(document.getElementById('call-frame'), {
+            iframeStyle: { width: '100%', height: '100%', border: '0' }
+        });
+        await callFrame.join({ url: ROOM_URL });
+    }
+
+    // 2. LÓGICA DEL CHAT
+    function sendMessage() {
+        const input = document.getElementById('msg-input');
+        if (input.value.trim() === "") return;
+
+        const chatBox = document.getElementById('chat-messages');
+        const newMsg = document.createElement('div');
+        newMsg.className = "msg me";
+        newMsg.textContent = input.value;
+        chatBox.appendChild(newMsg);
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+        input.value = "";
