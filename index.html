@@ -1,123 +1,160 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Dasawer | Social Video Chat</title>
-    <script crossorigin src="https://unpkg.com"></script>
-    <style>
-        :root { --green: #2ecc71; --blue: #3498db; --dark: #1a1a2e; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasawer | Next Gen Videochat</title>
+    <script crossorigin src="https://unpkg.com"></script>
+    <style>
+        :root {
+            --neon-green: #2ecc71;
+            --electric-blue: #3498db;
+            --bg-dark: #0a0b10;
+        }
 
-        body {
-            margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh;
-            display: flex; flex-direction: column;
-            background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite; color: white;
-        }
+        body, html {
+            margin: 0; padding: 0; height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: white; overflow: hidden;
+        }
 
-        @keyframes gradient { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
+        /* Fondo Animado de Partículas */
+        .background {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a2a3a 0%, #0a0b10 100%);
+            z-index: -1;
+        }
 
-        header { padding: 15px; text-align: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); border-bottom: 2px solid var(--green); }
+        .orb {
+            position: absolute; width: 400px; height: 400px;
+            background: linear-gradient(45deg, var(--neon-green), var(--electric-blue));
+            filter: blur(100px); border-radius: 50%; opacity: 0.2;
+            animation: float 20s infinite alternate;
+        }
 
-        #main-container { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
 
-        /* Video */
-        #video-section { flex: 2; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--blue); position: relative; overflow: hidden; }
+        /* Layout */
+        .app-wrapper {
+            display: flex; flex-direction: column; height: 100vh;
+            backdrop-filter: blur(10px);
+        }
 
-        /* Chat */
-        #chat-section { flex: 1; background: rgba(0,0,0,0.6); border-radius: 20px; display: flex; flex-direction: column; border: 1px solid var(--green); }
-        #chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { background: rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 10px; max-width: 80%; }
-        .msg.me { align-self: flex-end; background: var(--green); color: black; }
- 
-        #chat-input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
-        input { flex: 1; padding: 10px; border-radius: 20px; border: none; outline: none; }
-        button#send-btn { background: var(--green); border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        header {
+            padding: 20px 40px; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
 
-        #setup-screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 10; background: var(--dark); }
-        .join-card { text-align: center; padding: 40px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--green); }
-    </style>
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: 4px; color: var(--neon-green); }
+
+        #content { display: flex; flex: 1; padding: 20px; gap: 20px; }
+
+        /* Video Frame */
+        #video-container {
+            flex: 3; background: rgba(255,255,255,0.03);
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Sidebar Chat */
+        #sidebar {
+            flex: 1; background: rgba(255,255,255,0.05);
+            border-radius: 24px; display: flex; flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #messages { flex: 1; padding: 20px; overflow-y: auto; }
+        .bubble { 
+            background: rgba(255,255,255,0.1); padding: 12px; 
+            border-radius: 15px; margin-bottom: 10px; font-size: 14px;
+            border-left: 3px solid var(--neon-green);
+        }
+
+        .input-group { padding: 20px; display: flex; gap: 10px; }
+        input {
+            flex: 1; background: rgba(0,0,0,0.3); border: 1px solid #333;
+            padding: 12px; border-radius: 12px; color: white; outline: none;
+        }
+
+        button.main-btn {
+            background: linear-gradient(45deg, var(--neon-green), var(--electric-blue));
+            border: none; padding: 12px 25px; border-radius: 12px;
+            color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        button.main-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46, 204, 113, 0.3); }
+
+        #setup {
+            position: absolute; text-align: center; z-index: 5;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-    <h1 style="margin:0; font-size: 1.8rem;">DASA<span style="color:var(--green)">WER</span></h1>
-</header>
+    <div class="background">
+        <div class="orb"></div>
+        <div class="orb" style="right:0; bottom:0; animation-delay: -5s;"></div>
+    </div>
 
-<div id="main-container">
-    <section id="video-section">
-        <div id="setup-screen">
-            <div class="join-card">
-                <h2>¿Listo para entrar?</h2>
-                <button id="send-btn" style="padding: 15px 40px;" onclick="startDasawer()">UNIRSE A LA SALA</button>
-            </div>
-        </div>
-        <div id="call-frame" style="height: 100%;"></div>
-    </section>
+    <div class="app-wrapper">
+        <header>
+            <div class="logo">DASA<span style="color:white">WER</span></div>
+            <div id="status" style="font-size: 12px; color: #888;">● SERVIDOR ACTIVO</div>
+        </header>
 
-    <aside id="chat-section">
-        <div style="padding:15px; border-bottom:1px solid #333; color:var(--green); font-weight:bold;">CHAT GLOBAL</div>
-        <div id="chat-messages">
-            <div class="msg">Bienvenido a Dasawer. ¡Saluda a los demás!</div>
-        </div>
-        <div id="chat-input-area">
-            <input type="text" id="msg-input" placeholder="Escribe un mensaje...">
-            <button id="send-btn" onclick="sendMessage()">Enviar</button>
-        </div>
-    </aside>
-</div>
+        <div id="content">
+            <section id="video-container">
+                <div id="setup">
+                    <h2 style="font-size: 32px; margin-bottom: 10px;">Conexión Encriptada</h2>
+                    <p style="color: #aaa; margin-bottom: 30px;">Dasawer utiliza tecnología WebRTC de baja latencia.</p>
+                    <button class="main-btn" onclick="joinCall()">ENTRAR A LA SALA</button>
+                </div>
+                <div id="call-frame" style="width: 100%; height: 100%;"></div>
+            </section>
 
-<script>
+            <aside id="sidebar">
+                <div style="padding: 20px; font-weight: bold; border-bottom: 1px solid #333;">CHAT DE GRUPO</div>
+                <div id="messages">
+                    <div class="bubble">Sistema: Bienvenido a la red Dasawer.</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="chat-input" placeholder="Escribe algo...">
+                    <button class="main-btn" style="padding: 10px;" onclick="sendMsg()">></button>
+                </div>
+            </aside>
+        </div>
+    </div>
 
-&nbsp;   // 1. CONFIGURACIÓN DE VIDEO (Daily.co)
+    <script>
+        async function joinCall() {
+            // REEMPLAZA EL LINK DE ABAJO CON TU SALA DE DAILY.CO
+            const MY_URL = "TU_URL_DE_DAILY_AQUI"; 
 
-&nbsp;   async function startDasawer() {
+            document.getElementById('setup').style.display = 'none';
+            
+            const callFrame = window.DailyIframe.createFrame(document.getElementById('call-frame'), {
+                showLeaveButton: true,
+                iframeStyle: { width: '100%', height: '100%', border: '0', borderRadius: '24px' }
+            });
 
-&nbsp;       const ROOM\_URL = "TU\_URL\_DE\_DAILY\_AQUI"; // <--- PON TU LINK AQUÍ
+            await callFrame.join({ url: MY_URL });
+        }
 
-&nbsp;       document.getElementById('setup-screen').style.display = 'none';
-
-&nbsp;       
-
-&nbsp;       const callFrame = window.DailyIframe.createFrame(document.getElementById('call-frame'), {
-
-&nbsp;           iframeStyle: { width: '100%', height: '100%', border: '0' }
-
-&nbsp;       });
-
-&nbsp;       await callFrame.join({ url: ROOM\_URL });
-
-&nbsp;   }
-
-
-
-&nbsp;   // 2. LÓGICA DEL CHAT
-
-&nbsp;   function sendMessage() {
-
-&nbsp;       const input = document.getElementById('msg-input');
-
-&nbsp;       if (input.value.trim() === "") return;
-
-
-
-&nbsp;       const chatBox = document.getElementById('chat-messages');
-
-&nbsp;       const newMsg = document.createElement('div');
-
-&nbsp;       newMsg.className = "msg me";
-
-&nbsp;       newMsg.textContent = input.value;
-
-&nbsp;       chatBox.appendChild(newMsg);
-
-&nbsp;       
-
-&nbsp;       chatBox.scrollTop = chatBox.scrollHeight;
-
-&nbsp;       input.value = "";
-
-&nbsp;   }
-
+        function sendMsg() {
+            const input = document.getElementById('chat-input');
+            if(input.value.trim() === "") return;
+            const container = document.getElementById('messages');
+            const div = document.createElement('div');
+            div.className = "bubble";
+            div.textContent = "Tú: " + input.value;
+            container.appendChild(div);
+            input.value = "";
+            container.scrollTop = container.scrollHeight;
+        }
+    </script>
 </body>
 </html>
